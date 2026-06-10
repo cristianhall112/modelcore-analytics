@@ -36,8 +36,248 @@ export default function ModelCoreWebsite() {
   const breakEvenUnits = calculateBreakEven();
   const breakEvenRevenue = (breakEvenUnits * breakEvenInputs.pricePerUnit).toLocaleString();
 
+  // Download function
+  const downloadCSV = (filename, content) => {
+    const element = document.createElement('a');
+    const file = new Blob([content], { type: 'text/csv' });
+    element.href = URL.createObjectURL(file);
+    element.download = filename;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
+  const downloadDCFTemplate = () => {
+    const content = `ModelCore Analytics - DCF Valuation Model Template
+Instructions: Fill in the assumptions in the gray cells. All calculations are automatic.
+
+===== ASSUMPTIONS =====
+Company Name,Your Company Name
+Valuation Date,1/1/2024
+Currency,USD
+
+===== PROJECTION INPUTS =====
+Year,1,2,3,4,5
+Revenue (Year 0),$5000000
+
+Revenue Growth Rate,25%,20%,15%,12%,10%
+COGS as % of Revenue,40%,40%,40%,40%,40%
+Gross Margin,60%,60%,60%,60%,60%
+
+Operating Expenses as % of Revenue,35%,32%,30%,28%,26%
+EBITDA Margin,25%,28%,30%,32%,34%
+
+D&A as % of Revenue,5%,5%,5%,5%,5%
+EBIT Margin,20%,23%,25%,27%,29%
+
+Tax Rate,25%,25%,25%,25%,25%
+NOPAT Margin,15%,17.25%,18.75%,20.25%,21.75%
+
+CapEx as % of Revenue,8%,7%,6%,5%,4%
+Change in NWC as % of Revenue,2%,2%,2%,1%,1%
+
+===== DISCOUNT RATE INPUTS =====
+Risk-Free Rate (Rf),3%
+Market Risk Premium,6%
+Beta,1.2
+WACC,10.2%
+
+Terminal Growth Rate,3%
+
+Instructions:
+- Change blue cells only
+- All other cells calculate automatically
+- Review sensitivity analysis to understand key drivers`;
+    downloadCSV('DCF_Model_Template.csv', content);
+  };
+
+  const downloadScenarioTemplate = () => {
+    const content = `ModelCore Analytics - Scenario Analysis Template
+Use this template to model Base, Downside, and Upside scenarios.
+
+===== BUSINESS OVERVIEW =====
+Company Name,Your Company
+Analysis Date,1/1/2024
+Primary Metric,Year 5 EBITDA
+
+===== KEY ASSUMPTIONS =====
+Assumption,Downside,Base Case,Upside,Notes
+Customer Acquisition (monthly),-40%,10 customers,+50%,Slower market adoption
+Average Contract Value,-15%,$5000,+20%,Price pressure vs premium
+Monthly Churn Rate,+3%,5%,-2%,Weaker retention in downside
+Gross Margin,-3%,80%,+3%,Operating inefficiency vs scale
+Sales & Marketing as % Rev,+5%,25%,-5%,Higher CAC in downside
+R&D as % Revenue,+2%,15%,-2%,More investment needed in upside
+Admin & Overhead,$500K,$400K,$350K,Fixed costs less in upside
+
+===== PROFITABILITY ANALYSIS =====
+
+DOWNSIDE (Year 5):
+Revenue,$4524000
+Gross Margin,60%
+Operating Expenses,$2626280
+EBITDA,$88120
+EBITDA Margin,1.9%
+
+BASE CASE (Year 5):
+Revenue,$9360000
+Gross Margin,60%
+Operating Expenses,$4144000
+EBITDA,$1472000
+EBITDA Margin,15.7%
+
+UPSIDE (Year 5):
+Revenue,$22032000
+Gross Margin,63%
+Operating Expenses,$7620560
+EBITDA,$6259600
+EBITDA Margin,28.4%
+
+===== VALUATION OUTCOMES =====
+Metric,Downside,Base Case,Upside,Range
+Year 5 Revenue,$4524000,$9360000,$22032000,$17508000
+Revenue Growth,40%,60%,66%,26 pts
+Year 5 EBITDA,$88120,$1472000,$6259600,$6171480
+EBITDA Margin,1.9%,15.7%,28.4%,26.5 pts
+Enterprise Value,$528720,$14720000,$93894000,$93365280
+
+Instructions:
+- Fill in gray cells with your assumptions
+- All calculations are automatic
+- Compare all three scenarios
+- Assign probabilities to each scenario`;
+    downloadCSV('Scenario_Analysis_Template.csv', content);
+  };
+
+  const downloadSensitivityTemplate = () => {
+    const content = `ModelCore Analytics - Sensitivity Analysis Template
+Identify which assumptions drive the biggest impact on your business.
+
+===== ANALYSIS SETUP =====
+Company Name,Your Company
+Analysis Date,1/1/2024
+Target Metric,Year 5 EBITDA
+Base Case Target Metric,$1500000
+
+===== SENSITIVITY VARIABLES =====
+Variable,Low Impact,High Impact,Total Range,% of Base
+Customer Acquisition,-$340K,+$360K,$700K,92%
+Pricing (ARPU),-$340K,+$300K,$640K,84%
+Monthly Churn Rate,+$140K,+$290K,$150K,20%
+Gross Margin,-$200K,+$200K,$400K,53%
+Operating Expenses,-$180K,+$200K,$380K,50%
+
+===== RANKING (by impact) =====
+1. Customer Acquisition Rate: 92% impact - CRITICAL FOCUS
+2. Pricing (ARPU): 84% impact - CRITICAL FOCUS
+3. Churn Rate: 113% impact if we consider full range - CRITICAL FOCUS
+4. Gross Margin: 53% impact - IMPORTANT
+5. OpEx Control: 50% impact - IMPORTANT
+
+===== BUSINESS DRIVER DASHBOARD =====
+Metric,Current,Target,Frequency,Owner
+Monthly Churn Rate,5%,<3%,Weekly,VP Product
+Monthly Customer Acquisition,8,25+,Weekly,VP Sales
+Customer Lifetime Value,$48K,$65K,Monthly,CFO
+CAC Payback Period,12 months,6 months,Monthly,VP Sales
+Gross Margin %,65%,70%,Monthly,COO
+OpEx as % Revenue,160%,35%,Monthly,CFO
+
+Instructions:
+- Identify your key variables
+- Test each variable independently
+- Rank by impact on your target metric
+- Focus team effort on highest sensitivity variables`;
+    downloadCSV('Sensitivity_Analysis_Template.csv', content);
+  };
+
+  const downloadMnATemplate = () => {
+    const content = `ModelCore Analytics - M&A Analysis Template
+Evaluate acquisition targets and determine fair value.
+
+===== DEAL OVERVIEW =====
+Target Company Name,Target Inc.
+Acquirer Name,Your Company
+Proposed Close Date,6/30/2024
+Currency,USD
+
+===== STANDALONE VALUATION =====
+
+METHOD 1: DCF VALUATION
+Target Current Revenue,$10000000
+Revenue Growth Rates (Years 1-5),30%,25%,20%,15%,12%
+Discount Rate (WACC),12%
+Terminal Growth Rate,3%
+Enterprise Value (DCF),$68067887
+
+METHOD 2: COMPARABLE MULTIPLES
+Target EBITDA (LTM),$2000000
+Average EBITDA Multiple,9.2x
+Enterprise Value (Multiples),$18400000
+
+METHOD 3: PRECEDENT TRANSACTIONS
+Recent Similar Acquisitions,$55M,$62M,$58M
+Average,$58333333
+
+===== VALUATION SUMMARY =====
+Valuation Method,Enterprise Value,Multiple
+DCF Analysis,$68067887,34x
+Comparable Multiples,$18400000,9.2x
+Precedent Transactions,$58333333,29.2x
+
+Fair Value Range,$18M - $55M
+Recommended Price Range,$22M - $28M
+
+===== SYNERGY ANALYSIS =====
+
+REVENUE SYNERGIES:
+Cross-selling to customer base,$500K,Year 1 increasing
+Pricing improvements,$200K,2% lift
+Market expansion,$500K,Year 2+ opportunity
+Total Revenue Synergies,$1.2M (Year 2 run-rate)
+
+COST SYNERGIES:
+Elimination of duplication,$550K,Finance, sales, HR
+Operating leverage,$650K,Support, marketing, IT
+Total Cost Synergies,$1.2M annually
+
+TOTAL SYNERGIES,$2.4M annually
+
+===== DEAL ECONOMICS =====
+
+Acquisition Price Scenarios:
+Price,$22M,$28M,$35M,$42M
+Multiple on EBITDA,11x,14x,17.5x,21x
+
+Payback Period (synergies recoup cost):
+At $22M: 9 years
+At $28M: 12 years
+At $35M: 15 years
+
+RECOMMENDATION:
+Synergies justify acquisition at prices <$30M
+At $28M: Deal is accretive
+At $35M: Deal is dilutive
+Walk-away price: >$32M
+
+===== RISK REGISTER =====
+Risk,Probability,Impact,Mitigation
+Key person departure,Medium,High,Retention bonuses
+Customer churn post-acquisition,Medium,High,Early communication
+Synergy overestimation,High,High,Conservative estimates
+Cultural integration,Medium,Medium,Dedicated team
+Regulatory approval,Low,High,Legal diligence
+
+Instructions:
+- Customize with target company data
+- Be conservative with synergy estimates
+- Test multiple deal prices
+- Create risk mitigation plan`;
+    downloadCSV('M&A_Analysis_Template.csv', content);
+  };
+
   return (
-    <div style={{ fontFamily: 'var(--font-sans)', color: 'var(--color-text-primary)' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', color: '#333' }}>
       {/* Navigation */}
       <nav style={{
         background: '#1a1a1a',
@@ -46,12 +286,13 @@ export default function ModelCoreWebsite() {
         justifyContent: 'space-between',
         alignItems: 'center',
         borderBottom: '2px solid #cc0000',
-        marginBottom: '0'
+        marginBottom: '0',
+        flexWrap: 'wrap'
       }}>
         <div style={{ fontSize: '20px', fontWeight: '600', color: '#cc0000', cursor: 'pointer' }} onClick={() => setCurrentPage('home')}>
           ModelCore Analytics
         </div>
-        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', fontSize: '13px' }}>
+        <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', fontSize: '12px' }}>
           {['home', 'services', 'tools', 'learn', 'resources', 'about', 'contact'].map(page => (
             <button
               key={page}
@@ -61,7 +302,7 @@ export default function ModelCoreWebsite() {
                 border: 'none',
                 color: currentPage === page ? '#cc0000' : '#ccc',
                 cursor: 'pointer',
-                fontSize: '13px',
+                fontSize: '12px',
                 fontWeight: currentPage === page ? '600' : '400',
                 textTransform: 'capitalize',
                 padding: '4px 0',
@@ -153,8 +394,8 @@ export default function ModelCoreWebsite() {
           <h1 style={{ color: '#cc0000', fontSize: '36px', marginBottom: '40px' }}>Financial Modeling Tools</h1>
           
           {/* Tool Tabs */}
-          <div style={{ display: 'flex', gap: '16px', marginBottom: '40px', borderBottom: '2px solid #ddd', paddingBottom: '0' }}>
-            {['dcf', 'valuation', 'sensitivity', 'breakeven'].map(tool => (
+          <div style={{ display: 'flex', gap: '16px', marginBottom: '40px', borderBottom: '2px solid #ddd', paddingBottom: '0', flexWrap: 'wrap' }}>
+            {['dcf', 'sensitivity', 'breakeven'].map(tool => (
               <button
                 key={tool}
                 onClick={() => setCurrentPage(`tool-${tool}`)}
@@ -171,7 +412,7 @@ export default function ModelCoreWebsite() {
                   marginBottom: '-2px'
                 }}
               >
-                {tool === 'dcf' ? 'DCF Valuation' : tool === 'breakeven' ? 'Break-Even' : tool.charAt(0).toUpperCase() + tool.slice(1)}
+                {tool === 'dcf' ? 'DCF Valuation' : tool === 'breakeven' ? 'Break-Even' : 'Sensitivity'}
               </button>
             ))}
           </div>
@@ -183,7 +424,7 @@ export default function ModelCoreWebsite() {
               <p style={{ color: '#666', marginBottom: '30px' }}>Use our DCF calculator to value your business or target company. Download the full template to customize further.</p>
               <div style={{ background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '8px', padding: '30px' }}>
                 <p style={{ color: '#666', fontSize: '13px', marginBottom: '20px' }}>📥 <strong>Download the complete DCF template:</strong> Customize with your specific assumptions and build comprehensive models with sensitivity analysis.</p>
-                <button style={{
+                <button onClick={downloadDCFTemplate} style={{
                   background: '#cc0000',
                   color: '#fff',
                   border: 'none',
@@ -192,49 +433,7 @@ export default function ModelCoreWebsite() {
                   cursor: 'pointer',
                   borderRadius: '4px',
                   fontWeight: '600'
-                }}>Download DCF Template (CSV)</button>
-              </div>
-            </div>
-          )}
-
-          {/* Show Valuation Tool */}
-          {currentPage === 'tool-valuation' && (
-            <div>
-              <h2 style={{ color: '#666', fontSize: '24px', marginBottom: '30px' }}>Quick Valuation by Multiples</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
-                <div>
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', color: '#666', fontSize: '12px', marginBottom: '6px' }}>Annual EBITDA</label>
-                    <input type="number" defaultValue={500000} style={{ width: '100%', padding: '8px', background: '#fff', border: '1px solid #ddd', color: '#333', borderRadius: '4px' }} />
-                  </div>
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', color: '#666', fontSize: '12px', marginBottom: '6px' }}>EBITDA Multiple</label>
-                    <input type="number" defaultValue={10} style={{ width: '100%', padding: '8px', background: '#fff', border: '1px solid #ddd', color: '#333', borderRadius: '4px' }} />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', color: '#666', fontSize: '12px', marginBottom: '6px' }}>Annual Revenue</label>
-                    <input type="number" defaultValue={2000000} style={{ width: '100%', padding: '8px', background: '#fff', border: '1px solid #ddd', color: '#333', borderRadius: '4px' }} />
-                  </div>
-                </div>
-                <div style={{ background: '#f9f9f9', padding: '20px', borderRadius: '4px', border: '1px solid #ddd' }}>
-                  <div style={{ marginBottom: '20px' }}>
-                    <p style={{ color: '#666', fontSize: '12px', margin: '0 0 8px' }}>Enterprise Value (EBITDA)</p>
-                    <p style={{ color: '#cc0000', fontSize: '32px', fontWeight: '600', margin: '0' }}>$5.0M</p>
-                  </div>
-                  <div style={{ borderTop: '1px solid #ddd', paddingTop: '15px' }}>
-                    <p style={{ color: '#666', fontSize: '12px', margin: '0 0 8px' }}>Download full valuation template for deeper analysis</p>
-                    <button style={{
-                      background: '#cc0000',
-                      color: '#fff',
-                      border: 'none',
-                      padding: '8px 16px',
-                      fontSize: '12px',
-                      cursor: 'pointer',
-                      borderRadius: '4px',
-                      marginTop: '10px'
-                    }}>Download Template</button>
-                  </div>
-                </div>
+                }}>⬇️ Download DCF Template (CSV)</button>
               </div>
             </div>
           )}
@@ -243,11 +442,11 @@ export default function ModelCoreWebsite() {
           {currentPage === 'tool-sensitivity' && (
             <div>
               <h2 style={{ color: '#666', fontSize: '24px', marginBottom: '30px' }}>Sensitivity Analysis Calculator</h2>
-              <p style={{ color: '#666', marginBottom: '25px' }}>Identify which assumptions drive the biggest impact on your business. Adjust each variable to see impact on Year 5 EBITDA.</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
-                <div>
+              <p style={{ color: '#666', marginBottom: '25px' }}>Adjust the sliders below to see how changes in key variables impact your Year 5 EBITDA.</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', gridAutoFlow: 'dense' }}>
+                <div style={{ gridColumn: '1' }}>
                   <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', color: '#666', fontSize: '12px', marginBottom: '6px' }}>Monthly Churn Rate (%): {sensitivityVars.churn}%</label>
+                    <label style={{ display: 'block', color: '#666', fontSize: '12px', marginBottom: '6px' }}>Monthly Churn Rate: {sensitivityVars.churn}%</label>
                     <input type="range" min="1" max="10" value={sensitivityVars.churn} onChange={(e) => setSensitivityVars({...sensitivityVars, churn: parseFloat(e.target.value)})} style={{ width: '100%' }} />
                   </div>
                   <div style={{ marginBottom: '20px' }}>
@@ -259,7 +458,7 @@ export default function ModelCoreWebsite() {
                     <input type="range" min="3000" max="8000" step="500" value={sensitivityVars.arpu} onChange={(e) => setSensitivityVars({...sensitivityVars, arpu: parseFloat(e.target.value)})} style={{ width: '100%' }} />
                   </div>
                   <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', color: '#666', fontSize: '12px', marginBottom: '6px' }}>Gross Margin (%): {sensitivityVars.margin}%</label>
+                    <label style={{ display: 'block', color: '#666', fontSize: '12px', marginBottom: '6px' }}>Gross Margin: {sensitivityVars.margin}%</label>
                     <input type="range" min="40" max="80" value={sensitivityVars.margin} onChange={(e) => setSensitivityVars({...sensitivityVars, margin: parseFloat(e.target.value)})} style={{ width: '100%' }} />
                   </div>
                   <div>
@@ -267,16 +466,26 @@ export default function ModelCoreWebsite() {
                     <input type="range" min="200000" max="600000" step="50000" value={sensitivityVars.opex} onChange={(e) => setSensitivityVars({...sensitivityVars, opex: parseFloat(e.target.value)})} style={{ width: '100%' }} />
                   </div>
                 </div>
-                <div style={{ background: '#f9f9f9', padding: '20px', borderRadius: '4px', border: '1px solid #ddd' }}>
+                <div style={{ gridColumn: '2', background: '#f9f9f9', padding: '20px', borderRadius: '4px', border: '1px solid #ddd', height: 'fit-content' }}>
                   <p style={{ color: '#666', fontSize: '12px', margin: '0 0 8px' }}>Year 5 EBITDA Impact</p>
                   <p style={{ color: '#cc0000', fontSize: '36px', fontWeight: '600', margin: '0 0 20px' }}>${(sensitivityResult / 1000).toFixed(0)}K</p>
                   <div style={{ background: '#fff', padding: '15px', borderRadius: '4px', marginBottom: '15px' }}>
                     <p style={{ color: '#666', fontSize: '11px', margin: '0 0 8px' }}>Most Sensitive Variables:</p>
                     <p style={{ color: '#333', fontSize: '12px', margin: '0' }}>1. Monthly Churn Rate</p>
-                    <p style={{ color: '#333', fontSize: '12px', margin: '0' }}>2. Customer Acquisition</p>
-                    <p style={{ color: '#333', fontSize: '12px', margin: '0' }}>3. ARPU / Pricing</p>
+                    <p style={{ color: '#333', fontSize: '12px', margin: '0' }}>2. ARPU / Pricing</p>
+                    <p style={{ color: '#333', fontSize: '12px', margin: '0' }}>3. CAC</p>
                   </div>
-                  <p style={{ color: '#666', fontSize: '11px', margin: '15px 0 0' }}>Use the full template to rank all variables and build KPI dashboard</p>
+                  <button onClick={downloadSensitivityTemplate} style={{
+                    background: '#cc0000',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '8px 16px',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    borderRadius: '4px',
+                    width: '100%',
+                    fontWeight: '600'
+                  }}>⬇️ Download Full Template</button>
                 </div>
               </div>
             </div>
@@ -302,7 +511,7 @@ export default function ModelCoreWebsite() {
                     <input type="number" value={breakEvenInputs.variableCost} onChange={(e) => setBreakEvenInputs({...breakEvenInputs, variableCost: parseFloat(e.target.value)})} style={{ width: '100%', padding: '8px', background: '#fff', border: '1px solid #ddd', color: '#333', borderRadius: '4px' }} />
                   </div>
                 </div>
-                <div style={{ background: '#f9f9f9', padding: '20px', borderRadius: '4px', border: '1px solid #ddd' }}>
+                <div style={{ background: '#f9f9f9', padding: '20px', borderRadius: '4px', border: '1px solid #ddd', height: 'fit-content' }}>
                   <div style={{ marginBottom: '20px' }}>
                     <p style={{ color: '#666', fontSize: '12px', margin: '0 0 8px' }}>Break-Even Units</p>
                     <p style={{ color: '#cc0000', fontSize: '32px', fontWeight: '600', margin: '0' }}>{breakEvenUnits.toLocaleString()}</p>
@@ -338,18 +547,11 @@ export default function ModelCoreWebsite() {
                 cursor: 'pointer',
                 transition: 'border-color 0.2s'
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                  <div style={{ flex: 1 }}>
-                    <h3 style={{ color: '#cc0000', margin: '0 0 6px', fontSize: '16px' }}>{resource.title}</h3>
-                    <p style={{ color: '#999', fontSize: '12px', margin: '0 0 8px', textTransform: 'uppercase' }}>{resource.topic}</p>
-                    <p style={{ margin: '0', color: '#555', lineHeight: '1.6', fontSize: '14px' }}>{resource.desc}</p>
-                  </div>
-                </div>
+                <h3 style={{ color: '#cc0000', margin: '0 0 6px', fontSize: '16px' }}>{resource.title}</h3>
+                <p style={{ color: '#999', fontSize: '12px', margin: '0 0 8px', textTransform: 'uppercase' }}>{resource.topic}</p>
+                <p style={{ margin: '0', color: '#555', lineHeight: '1.6', fontSize: '14px' }}>{resource.desc}</p>
               </div>
             ))}
-          </div>
-          <div style={{ marginTop: '40px', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '8px', padding: '20px' }}>
-            <p style={{ color: '#666', fontSize: '13px', margin: '0' }}>Full educational guides with detailed examples, frameworks, and real-world case studies available. Click on any topic to read the complete guide.</p>
           </div>
         </div>
       )}
@@ -364,26 +566,26 @@ export default function ModelCoreWebsite() {
             {[
               { 
                 name: 'DCF Valuation Model', 
-                desc: 'Complete DCF model with 5-year projections, discount rate inputs, terminal value, and 2-way sensitivity analysis. Customize with your assumptions.',
-                file: 'DCF_Model_Template.csv',
+                desc: 'Complete DCF model with 5-year projections, discount rate inputs, terminal value, and 2-way sensitivity analysis.',
+                onClick: downloadDCFTemplate,
                 icon: '📊'
               },
               { 
                 name: 'Scenario Analysis Template', 
-                desc: 'Model base, downside, and upside cases. Compare outcomes. Assign probabilities. Understand the range of possible futures for your business.',
-                file: 'Scenario_Analysis_Template.csv',
+                desc: 'Model base, downside, and upside cases. Compare outcomes and understand the range of possible futures.',
+                onClick: downloadScenarioTemplate,
                 icon: '🎯'
               },
               { 
                 name: 'Sensitivity Analysis Template', 
-                desc: 'Identify your business drivers. Rank variables by impact. Build KPI dashboard. Understand what to obsess over.',
-                file: 'Sensitivity_Analysis_Template.csv',
+                desc: 'Identify your business drivers. Rank variables by impact. Build KPI dashboard.',
+                onClick: downloadSensitivityTemplate,
                 icon: '🎚️'
               },
               { 
                 name: 'M&A Analysis Workbook', 
-                desc: 'Target valuation (DCF + multiples), synergy identification, integration costs, accretion/dilution analysis, deal structure options.',
-                file: 'M&A_Analysis_Template.csv',
+                desc: 'Target valuation, synergy identification, integration costs, accretion/dilution analysis.',
+                onClick: downloadMnATemplate,
                 icon: '🤝'
               }
             ].map((template, i) => (
@@ -399,7 +601,7 @@ export default function ModelCoreWebsite() {
                   <div style={{ flex: 1 }}>
                     <h3 style={{ color: '#cc0000', margin: '0 0 8px', fontSize: '17px' }}>{template.name}</h3>
                     <p style={{ margin: '0 0 12px', color: '#666', lineHeight: '1.6', fontSize: '14px' }}>{template.desc}</p>
-                    <button style={{
+                    <button onClick={template.onClick} style={{
                       background: '#cc0000',
                       color: '#fff',
                       border: 'none',
@@ -408,22 +610,11 @@ export default function ModelCoreWebsite() {
                       cursor: 'pointer',
                       borderRadius: '4px',
                       fontWeight: '600'
-                    }}>Download (CSV)</button>
+                    }}>⬇️ Download (CSV)</button>
                   </div>
                 </div>
               </div>
             ))}
-          </div>
-
-          <div style={{ marginTop: '40px', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '8px', padding: '24px' }}>
-            <h3 style={{ color: '#cc0000', margin: '0 0 12px', fontSize: '16px' }}>How to Use These Templates</h3>
-            <div style={{ color: '#666', fontSize: '13px', lineHeight: '1.8' }}>
-              <p style={{ margin: '0 0 10px' }}>✓ Download as CSV and open in Excel or Google Sheets</p>
-              <p style={{ margin: '0 0 10px' }}>✓ Fill in the gray cells with your assumptions</p>
-              <p style={{ margin: '0 0 10px' }}>✓ All other cells calculate automatically</p>
-              <p style={{ margin: '0 0 10px' }}>✓ Use sensitivity analysis to identify key drivers</p>
-              <p style={{ margin: '0 0 0' }}>✓ Share with board, investors, or stakeholders for alignment</p>
-            </div>
           </div>
         </div>
       )}
@@ -450,7 +641,7 @@ export default function ModelCoreWebsite() {
 
             <h3 style={{ color: '#cc0000' }}>Our Approach</h3>
             <p>
-              We believe that strong financial modeling is the foundation of sound decision-making. Whether you're raising capital, evaluating an acquisition, or forecasting under uncertainty, your assumptions matter. Our models are built to be:
+              We believe that strong financial modeling is the foundation of sound decision-making. Our models are built to be:
             </p>
             <ul style={{ marginLeft: '20px' }}>
               <li><strong>Rigorous</strong> — We challenge assumptions and stress-test scenarios</li>
